@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGHT — Intelligent Mining Safety & Autonomous Haulage System</title>
+  <meta name="description" content="Situational awareness and perception HUD for the SIGHT Autonomous Mobile Robot in NMDC Bailadila Iron Ore Mine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+  <div id="app" class="sight-container">
+    
+    <!-- Top System Header -->
+    <header class="sight-header" id="sight-header">
+      <div class="header-left">
+        <div class="brand-badge">
+          <span class="brand-radar-icon"></span>
+          <div class="brand-title-group">
+            <h1 class="brand-name">SIGHT <span class="brand-tag">AMR-01</span></h1>
+            <span class="brand-sub">NMDC Bailadila Complex • Deposit 14 Haulage Sector</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode & Status Indicator -->
+      <div class="header-center">
+        <div class="mode-pill-selector" id="mode-selector">
+          <button class="mode-btn active" id="btn-mode-presentation" data-mode="PRESENTATION">
+            <span class="mode-dot"></span>
+            PRESENTATION
+          </button>
+          <button class="mode-btn" id="btn-mode-live" data-mode="LIVE">
+            <span class="mode-dot live-dot"></span>
+            LIVE
+          </button>
+        </div>
+        <div class="connection-status-banner" id="connection-status-banner">
+          <span class="status-indicator-dot dot-scenario"></span>
+          <span class="status-text" id="connection-status-text">NMDC Bailadila Deposit 14 • Autonomous Perception Active</span>
+        </div>
+      </div>
+
+      <!-- Quick Telemetry Chips & Controls -->
+      <div class="header-right">
+        <!-- Environment Selector -->
+        <div class="scenario-selector-container" id="scenario-selector-container">
+          <select id="select-scenario" class="scenario-select" title="Switch Environment Condition">
+            <option value="presentation_scenario.json">Deposit 14: Fallen Boulder Hazard (Monsoon Fog)</option>
+            <option value="scenario_approaching_dumper.json">Deposit 14: CAT 777 Haul Truck (Curve)</option>
+            <option value="scenario_clear_corridor.json">Deposit 14: Clear Haul Corridor</option>
+          </select>
+        </div>
+
+        <div class="telemetry-chip">
+          <span class="chip-label">CONDITIONS</span>
+          <span class="chip-value text-amber" id="hdr-condition">Monsoon Fog / Wet</span>
+        </div>
+        <div class="telemetry-chip">
+          <span class="chip-label">VISIBILITY</span>
+          <span class="chip-value" id="hdr-visibility">16.5 m</span>
+        </div>
+        <div class="telemetry-chip">
+          <span class="chip-label">SPEED</span>
+          <span class="chip-value" id="hdr-speed">2.2 m/s</span>
+        </div>
+        <div class="telemetry-chip">
+          <span class="chip-label">BATTERY</span>
+          <span class="chip-value text-emerald" id="hdr-battery">86.4%</span>
+        </div>
+        <button class="header-icon-btn" id="btn-open-help" title="Quick Reference & Shortcuts (?)">❓</button>
+        <button class="header-icon-btn" id="btn-open-settings" title="ROS 2 Bridge Connection Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <main class="sight-workspace">
+      
+      <!-- Primary Spatial Visualizer (Center Viewport) -->
+      <section class="viewport-section" id="viewport-section">
+        <div class="viewport-header">
+          <div class="viewport-title-group">
+            <span class="panel-icon">🗺️</span>
+            <h2>SPATIAL SLAM & PERCEPTION MAP</h2>
+            <span class="badge-subtle">Frame: /map</span>
+            <span class="badge-metric" id="map-scale-badge">1 Grid = 5.0m</span>
+          </div>
+          
+          <!-- Map Overlay Controls -->
+          <div class="viewport-controls">
+            <div class="control-group">
+              <button class="ctrl-btn" id="btn-zoom-in" title="Zoom In (+)">➕</button>
+              <button class="ctrl-btn" id="btn-zoom-out" title="Zoom Out (-)">➖</button>
+              <button class="ctrl-btn" id="btn-center-amr" title="Center on SIGHT AMR (F)">🎯 Focus AMR</button>
+              <button class="ctrl-btn" id="btn-reset-view" title="Reset Default View (R)">🔄 Reset</button>
+            </div>
+            <div class="control-group layer-toggles">
+              <label class="toggle-label" title="Toggle LiDAR scan points">
+                <input type="checkbox" id="toggle-lidar" checked>
+                <span>LiDAR Scan</span>
+              </label>
+              <label class="toggle-label" title="Toggle camera FOV cone">
+                <input type="checkbox" id="toggle-camera-fov" checked>
+                <span>Camera FOV</span>
+              </label>
+              <label class="toggle-label" title="Toggle Safety Zones">
+                <input type="checkbox" id="toggle-safety-zones" checked>
+                <span>Braking Zones</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="canvas-wrapper" id="canvas-wrapper">
+          <canvas id="spatial-canvas"></canvas>
+          
+          <!-- Environmental Monsoon Fog Overlay Simulation -->
+          <div class="fog-overlay" id="fog-overlay"></div>
+
+          <!-- Compass & Orientation Rose -->
+          <div class="compass-widget" id="compass-widget">
+            <div class="compass-dial" id="compass-dial">
+              <span class="compass-point north">N</span>
+              <span class="compass-point east">E</span>
+              <span class="compass-point south">S</span>
+              <span class="compass-point west">W</span>
+              <div class="compass-needle" id="compass-needle"></div>
+            </div>
+            <span class="compass-heading-text" id="compass-heading-text">350° NNW</span>
+          </div>
+
+          <!-- Active Distance Scale Bar -->
+          <div class="distance-scale-widget">
+            <div class="scale-bar-line"></div>
+            <span class="scale-text" id="scale-bar-text">10 Meters</span>
+          </div>
+
+          <!-- AMR Position HUD Overlay -->
+          <div class="amr-hud-overlay" id="amr-hud-overlay">
+            <div class="hud-item">
+              <span class="hud-label">COORDINATES</span>
+              <span class="hud-val font-mono" id="hud-coords">X: 45.0m | Y: 40.5m</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">ROAD GRADIENT</span>
+              <span class="hud-val font-mono" id="hud-gradient">Pitch: -3.4° (Slope: -5.9%)</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">SLAM CONFIDENCE</span>
+              <span class="hud-val font-mono text-emerald" id="hud-slam">98.2% (Nominal)</span>
+            </div>
+          </div>
+
+          <!-- Legend Bar -->
+          <div class="map-legend">
+            <div class="legend-item"><span class="leg-color leg-amr"></span> SIGHT AMR</div>
+            <div class="legend-item"><span class="leg-color leg-road"></span> Haul Corridor</div>
+            <div class="legend-item"><span class="leg-color leg-berm"></span> Safety Berm</div>
+            <div class="legend-item"><span class="leg-color leg-crit"></span> Critical (<8m)</div>
+            <div class="legend-item"><span class="leg-color leg-warn"></span> Warning (<18m)</div>
+            <div class="legend-item"><span class="leg-color leg-safe"></span> Caution (<35m)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Sidebar: Perception & Sensor Intelligence HUD -->
+      <aside class="sight-sidebar" id="sight-sidebar">
+        
+        <!-- Safety Risk & Immediate Action Assessment Banner -->
+        <div id="risk-banner-slot"></div>
+
+        <!-- AMR Forward Optical View with Neural Bounding Boxes -->
+        <div id="camera-feed-slot"></div>
+
+        <!-- Active Detected Obstacle Tracker List -->
+        <div id="perception-list-slot"></div>
+
+        <!-- Telemetry Gauges (LiDAR Radial Sectors + IMU Slope Attitude) -->
+        <div id="telemetry-gauges-slot"></div>
+
+      </aside>
+
+    </main>
+
+    <!-- Footer System Bar with Performance Profiler -->
+    <footer class="sight-footer">
+      <div class="footer-left">
+        <span class="footer-indicator">●</span>
+        <span>SIGHT ROBOTIC SUITE v2.0 • NMDC BAILADILA OPERATIONAL SECTOR</span>
+      </div>
+      <div class="footer-center">
+        <span>Coordinate Datum: Local Mine Topo Metric Grid</span>
+      </div>
+      <div class="footer-right">
+        <span class="footer-fps-stat font-mono" id="fps-counter">60.0 FPS</span>
+        <span>ROS 2 Bridge: <strong class="text-amber" id="footer-bridge-status">Standby</strong></span>
+      </div>
+    </footer>
+
+    <!-- Center Window: SIGHT AMR Connection Alert Window -->
+    <div class="modal-backdrop" id="live-disconnected-modal" style="display: none;">
+      <div class="modal-dialog connection-alert-window">
+        <div class="modal-header alert-header-red">
+          <div class="modal-title">
+            <span class="alert-pulse-icon">🔴</span>
+            <h3>SIGHT AMR NOT CONNECTED</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-disconnected">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="connection-alert-box">
+            <h4 class="conn-headline">🔴 SIGHT AMR NOT CONNECTED</h4>
+            <p class="conn-subheadline">Waiting for live sensor connection...</p>
+          </div>
+
+          <div class="sensor-hardware-checklist">
+            <div class="sensor-check-row">
+              <span class="sensor-name">📡 LiDAR LaserScan (/sight/scan)</span>
+              <span class="sensor-stat text-red font-mono">WAITING FOR HANDSHAKE</span>
+            </div>
+            <div class="sensor-check-row">
+              <span class="sensor-name">📷 Camera Perception (/sight/camera/detections)</span>
+              <span class="sensor-stat text-red font-mono">OFFLINE</span>
+            </div>
+            <div class="sensor-check-row">
+              <span class="sensor-name">📐 IMU Inclinometer (/sight/amr/imu)</span>
+              <span class="sensor-stat text-red font-mono">OFFLINE</span>
+            </div>
+            <div class="sensor-check-row">
+              <span class="sensor-name">🌐 ROS 2 Bridge (<span id="alert-bridge-endpoint">ws://localhost:9090</span>)</span>
+              <span class="sensor-stat text-amber font-mono" id="alert-bridge-status">RETRYING...</span>
+            </div>
+          </div>
+
+          <div class="alert-actions-panel">
+            <button class="btn-alert-primary" id="btn-retry-live-conn">🔄 Retry Live Connection</button>
+            <button class="btn-alert-secondary" id="btn-simulate-live-conn">⚡ Test In-Browser Live Stream</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="btn-back-to-presentation">◀ Return to PRESENTATION Mode</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help & Presentation Shortcuts Modal -->
+    <div class="modal-backdrop" id="help-modal" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span class="panel-icon">💡</span>
+            <h3>SIGHT Perception HUD Quick Reference</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-help">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="guide-intro">
+            <strong>SIGHT</strong> represents what the AMR sees and understands in NMDC Bailadila under monsoon fog.
+          </p>
+          <div class="shortcut-table">
+            <div class="sc-row"><kbd>1</kbd><span>Deposit 14: Fallen Boulder Hazard (Critical Stop)</span></div>
+            <div class="sc-row"><kbd>2</kbd><span>Deposit 14: CAT 777 Haul Dumper Approach (Caution)</span></div>
+            <div class="sc-row"><kbd>3</kbd><span>Deposit 14: Nominal Clear Haul Straightaway (Safe)</span></div>
+            <div class="sc-row"><kbd>L</kbd><span>Toggle between PRESENTATION and LIVE Mode</span></div>
+            <div class="sc-row"><kbd>F</kbd><span>Center / Focus View on SIGHT AMR</span></div>
+            <div class="sc-row"><kbd>R</kbd><span>Reset Map Pan and Zoom to Default</span></div>
+            <div class="sc-row"><kbd>?</kbd><span>Open / Close This Help Guide</span></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-primary" id="btn-close-help-footer">Got It</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROS 2 Bridge Configuration Modal -->
+    <div class="modal-backdrop" id="ros-modal" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span class="panel-icon">🔌</span>
+            <h3>ROS 2 WebSocket Bridge Configuration</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-ros-url">WebSocket Endpoint URL</label>
+            <input type="text" id="input-ros-url" class="form-input font-mono" value="ws://localhost:9090" placeholder="ws://192.168.1.100:9090">
+            <span class="input-hint">Standard rosbridge_websocket URL on SIGHT AMR.</span>
+          </div>
+
+          <div class="modal-connection-status-box">
+            <div class="status-row">
+              <span>Bridge Status:</span>
+              <strong id="modal-conn-status" class="text-red">Disconnected</strong>
+            </div>
+            <div class="status-row">
+              <span>Latency:</span>
+              <span id="modal-latency" class="font-mono">-- ms</span>
+            </div>
+          </div>
+
+          <div class="demo-fallback-box">
+            <label class="demo-checkbox-label">
+              <input type="checkbox" id="check-sim-live">
+              <span><strong>Enable In-Browser Live Telemetry Stream</strong> (Demonstration stream when physical AMR is offline)</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="btn-modal-cancel">Close</button>
+          <button class="btn-primary" id="btn-modal-connect">Connect to AMR</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

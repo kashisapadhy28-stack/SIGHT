@@ -1,0 +1,95 @@
+{
+  "scenario_info": {
+    "name": "Deposit 14 South Curve — CAT 777 Haul Truck Approach",
+    "condition": "Moderate Fog / Damp Road",
+    "visibility_m": 24.0,
+    "precipitation": "Light Mist",
+    "road_surface": "Compacted Iron Ore Base",
+    "timestamp": "2026-09-29T10:50:00Z"
+  },
+  "map": {
+    "dimensions": { "width_m": 120, "height_m": 80 },
+    "origin": { "x": 0, "y": 0 },
+    "haul_road": {
+      "centerline": [
+        { "x": 10, "y": 40 },
+        { "x": 30, "y": 42 },
+        { "x": 55, "y": 40 },
+        { "x": 75, "y": 34 },
+        { "x": 95, "y": 30 },
+        { "x": 115, "y": 32 }
+      ],
+      "width_m": 14.0,
+      "left_berm": [
+        { "x": 10, "y": 47 },
+        { "x": 30, "y": 49 },
+        { "x": 55, "y": 47 },
+        { "x": 75, "y": 41 },
+        { "x": 95, "y": 37 },
+        { "x": 115, "y": 39 }
+      ],
+      "right_berm": [
+        { "x": 10, "y": 33 },
+        { "x": 30, "y": 35 },
+        { "x": 55, "y": 33 },
+        { "x": 75, "y": 27 },
+        { "x": 95, "y": 23 },
+        { "x": 115, "y": 25 }
+      ]
+    }
+  },
+  "amr": {
+    "id": "SIGHT-AMR-01",
+    "position": { "x": 38.0, "y": 41.5, "z": 0.0 },
+    "heading_deg": 354.0,
+    "speed_mps": 1.8,
+    "gradient": { "pitch_deg": -1.8, "roll_deg": 0.6, "slope_pct": -3.1 },
+    "trajectory_history": [
+      { "x": 15.0, "y": 40.5 },
+      { "x": 25.0, "y": 41.2 },
+      { "x": 38.0, "y": 41.5 }
+    ]
+  },
+  "detections": [
+    {
+      "id": "DET-201",
+      "class": "HEAVY_DUMPER",
+      "label": "CAT 777 100-Ton Haul Truck",
+      "confidence": 0.96,
+      "distance_m": 22.4,
+      "bearing_deg": -8.0,
+      "position": { "x": 60.2, "y": 38.0 },
+      "relative_velocity_mps": -6.5,
+      "risk": "WARNING",
+      "action": "YIELD RIGHT TO SAFETY BERM CORRIDOR — CLEARANCE 5.1m",
+      "bbox_cam": { "x": 28, "y": 30, "w": 34, "h": 46 }
+    },
+    {
+      "id": "DET-202",
+      "class": "LIGHT_VEHICLE",
+      "label": "Escort Jeep Behind Dumper",
+      "confidence": 0.87,
+      "distance_m": 41.0,
+      "bearing_deg": -10.5,
+      "position": { "x": 78.5, "y": 34.0 },
+      "relative_velocity_mps": -5.8,
+      "risk": "CAUTION",
+      "action": "MAINTAINING SAFE TRAILING SEPARATION",
+      "bbox_cam": { "x": 12, "y": 34, "w": 14, "h": 18 }
+    }
+  ],
+  "diagnostics": {
+    "system_health": "OPTIMAL",
+    "connected": true,
+    "mode": "PRESENTATION_SCENARIO",
+    "sensors": {
+      "lidar_2d_3d": { "status": "OK", "rate_hz": 10.0 },
+      "stereo_camera": { "status": "OK", "rate_hz": 30.0 },
+      "imu_6axis": { "status": "OK", "calibrated": true }
+    },
+    "telemetry": {
+      "battery_soc_pct": 84.1,
+      "temp_internal_c": 35.8
+    }
+  }
+}

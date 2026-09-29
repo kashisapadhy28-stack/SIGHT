@@ -1,0 +1,133 @@
+{
+  "scenario_info": {
+    "name": "NMDC Bailadila Iron Ore Mine - Deposit 14 North Haulage Sector",
+    "condition": "Severe Monsoon Fog & Wet Road Surface",
+    "visibility_m": 16.5,
+    "precipitation": "Continuous Heavy Drizzle",
+    "road_surface": "Wet Compacted Hematite/Clay",
+    "timestamp": "2026-09-29T10:45:00Z"
+  },
+  "map": {
+    "dimensions": { "width_m": 120, "height_m": 80 },
+    "origin": { "x": 0, "y": 0 },
+    "haul_road": {
+      "centerline": [
+        { "x": 10, "y": 40 },
+        { "x": 30, "y": 42 },
+        { "x": 55, "y": 40 },
+        { "x": 75, "y": 34 },
+        { "x": 95, "y": 30 },
+        { "x": 115, "y": 32 }
+      ],
+      "width_m": 14.0,
+      "left_berm": [
+        { "x": 10, "y": 47 },
+        { "x": 30, "y": 49 },
+        { "x": 55, "y": 47 },
+        { "x": 75, "y": 41 },
+        { "x": 95, "y": 37 },
+        { "x": 115, "y": 39 }
+      ],
+      "right_berm": [
+        { "x": 10, "y": 33 },
+        { "x": 30, "y": 35 },
+        { "x": 55, "y": 33 },
+        { "x": 75, "y": 27 },
+        { "x": 95, "y": 23 },
+        { "x": 115, "y": 25 }
+      ]
+    },
+    "static_features": [
+      { "type": "SAFETY_BERM_ROCKWALL", "coords": [[10, 48], [115, 40]] },
+      { "type": "PIT_EDGE_DROP_WARNING", "coords": [[10, 31], [115, 23]] },
+      { "type": "BENCH_LEVEL", "elevation_m": 1240, "name": "Bench 14-B" }
+    ]
+  },
+  "amr": {
+    "id": "SIGHT-AMR-01",
+    "position": { "x": 45.0, "y": 40.5, "z": 0.0 },
+    "heading_deg": 350.0,
+    "speed_mps": 2.2,
+    "gradient": { "pitch_deg": -3.4, "roll_deg": 1.1, "slope_pct": -5.9 },
+    "lidar_fov_deg": 360,
+    "camera_fov_deg": 84,
+    "trajectory_history": [
+      { "x": 20.0, "y": 41.2 },
+      { "x": 28.0, "y": 41.8 },
+      { "x": 36.0, "y": 41.0 },
+      { "x": 45.0, "y": 40.5 }
+    ]
+  },
+  "detections": [
+    {
+      "id": "DET-101",
+      "class": "FALLEN_BOULDER",
+      "label": "Fallen Hematite Boulder (0.9m)",
+      "confidence": 0.94,
+      "distance_m": 12.4,
+      "bearing_deg": -4.5,
+      "position": { "x": 57.3, "y": 39.5 },
+      "relative_velocity_mps": 0.0,
+      "risk": "CRITICAL",
+      "action": "AUTOMATIC DECELERATION / EMERGENCY BUFFER ENGAGED",
+      "bbox_cam": { "x": 44, "y": 58, "w": 18, "h": 22 }
+    },
+    {
+      "id": "DET-102",
+      "class": "HEAVY_DUMPER",
+      "label": "CAT 777 Haul Truck (Approaching)",
+      "confidence": 0.91,
+      "distance_m": 34.8,
+      "bearing_deg": -12.0,
+      "position": { "x": 78.5, "y": 33.2 },
+      "relative_velocity_mps": -5.4,
+      "risk": "CAUTION",
+      "action": "MONITORING APPROACH TRAJECTORY - CLEARANCE 4.2m",
+      "bbox_cam": { "x": 16, "y": 32, "w": 26, "h": 36 }
+    },
+    {
+      "id": "DET-103",
+      "class": "MINE_CREW",
+      "label": "Field Survey Operator (Hi-Vis)",
+      "confidence": 0.97,
+      "distance_m": 18.2,
+      "bearing_deg": 18.4,
+      "position": { "x": 61.2, "y": 46.2 },
+      "relative_velocity_mps": 0.3,
+      "risk": "WARNING",
+      "action": "SPEED LIMITED TO 1.5 m/s - HORN AUDIBLE WARNING",
+      "bbox_cam": { "x": 72, "y": 42, "w": 12, "h": 28 }
+    },
+    {
+      "id": "DET-104",
+      "class": "LIGHT_VEHICLE",
+      "label": "Maintenance Bolero (Stationary at Turnout)",
+      "confidence": 0.88,
+      "distance_m": 48.0,
+      "bearing_deg": -16.0,
+      "position": { "x": 92.0, "y": 26.5 },
+      "relative_velocity_mps": 0.0,
+      "risk": "SAFE",
+      "action": "OUTSIDE ACTIVE BRAKING ENVELOPE",
+      "bbox_cam": { "x": 8, "y": 28, "w": 14, "h": 16 }
+    }
+  ],
+  "diagnostics": {
+    "system_health": "OPTIMAL",
+    "connected": true,
+    "mode": "PRESENTATION_SCENARIO",
+    "sensors": {
+      "lidar_2d_3d": { "status": "OK", "rate_hz": 10.0, "points_per_sec": 24000, "range_m": 50.0 },
+      "stereo_camera": { "status": "OK", "rate_hz": 30.0, "resolution": "1920x1080", "dewog_filter": "ACTIVE" },
+      "imu_6axis": { "status": "OK", "calibrated": true, "drift_deg_hr": 0.04 },
+      "slam_nav2": { "status": "TRACKING_NOMINAL", "confidence": 0.98, "loop_closures": 18 }
+    },
+    "telemetry": {
+      "battery_soc_pct": 86.4,
+      "bus_voltage_v": 48.2,
+      "motor_current_a": 14.6,
+      "temp_internal_c": 36.5,
+      "estimated_runtime_hrs": 3.8
+    }
+  }
+}
